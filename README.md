@@ -10,12 +10,7 @@ model-algebra-typescript).
 pnpm add github:model-algebra/common-typescript
 ```
 
-The package builds itself when installed. With pnpm, allow that in `pnpm-workspace.yaml`:
-
-```yaml
-onlyBuiltDependencies:
-  - model-algebra-common
-```
+The built package is in the repository, so nothing is built when it is installed.
 
 ## Models
 
@@ -81,6 +76,15 @@ pnpm install
 pnpm type-check
 pnpm build
 ```
+
+`dist/` is committed, because other projects install the package from GitHub without building it. Enable the
+pre-commit hook once per clone; it rebuilds `dist/` and adds it to every commit that changes the sources:
+
+```sh
+git config core.hooksPath .githooks
+```
+
+CI fails when the committed `dist/` differs from a build of the sources.
 
 ## License
 
