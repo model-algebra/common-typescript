@@ -7,3 +7,5 @@ export type {
     Rule, Op, TableConstraint, Index, Targets,
     SortDefinition, FilterDefinition, ArgumentType, Sortable, Filterable, SortKey, ModelFilter,
 } from "./Model.js";
+export { sortOptions, filterOptions, OP_NAMES, RESERVED_PARAMETERS } from "./ListOptions.js";
+export type { ListModel, SortOption, FilterOption } from "./ListOptions.js";

@@ -56,6 +56,19 @@ filterDefinitions(true)                               // { '': { op: '=' } }
 filterDefinitions({ eq: { op: '=' }, prefix: { predicate: 'startsWith', argument: true } })   // as given
 ```
 
+`sortOptions()` and `filterOptions()` list the ways a model's records can be sorted and filtered, with the names that
+APIs and user interfaces use for them, so that bridges agree:
+
+```ts
+sortOptions(model).map(o => o.key)       // ['lastName.plain', 'lastName.caseless', 'age', 'byName']
+filterOptions(model).map(o => o.name)    // ['lastName.prefix', 'age.gte', 'age.lte', 'status.active', 'adults']
+```
+
+A field's unnamed definition takes the field's name, named ones `<field>.<name>`, filters with operators the client
+chooses `<name>.eq`, `.ne`, `.lt`, `.lte`, `.gt`, `.gte`; sort orders and filters of the model keep their names. Each
+filter option says whether the client gives a value (`input: 'value'`, of `valueType`) or only switches it on
+(`'switch'`). Names given twice, or names of unknown fields, are errors.
+
 ### Sets of models
 
 A `ModelSet` holds related models, such as the tables of one database, by their unique names:
