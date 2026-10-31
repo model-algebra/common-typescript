@@ -1,0 +1,1 @@
+{"version":3,"file":"ModelSetBridge.d.ts","sourceRoot":"","sources":["../src/ModelSetBridge.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,QAAQ,EAAE,MAAM,eAAe,CAAC;AAE9C;;;;;GAKG;AACH,MAAM,WAAW,cAAc,CAAC,CAAC;IAC7B,mDAAmD;IACnD,QAAQ,CAAC,MAAM,EAAE,QAAQ,GAAG,CAAC,CAAC;IAE9B,sDAAsD;IACtD,OAAO,CAAC,MAAM,EAAE,CAAC,GAAG,QAAQ,CAAC;CAChC"}
