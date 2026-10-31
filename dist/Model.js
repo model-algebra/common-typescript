@@ -65,6 +65,8 @@ export class Field {
     parameters;
     constraints;
     targets;
+    sortable;
+    filterable;
     constructor(data) {
         this.name = data.name;
         this.type = data.type;
@@ -72,6 +74,8 @@ export class Field {
         this.parameters = data.parameters;
         this.constraints = data.constraints;
         this.targets = data.targets;
+        this.sortable = data.sortable;
+        this.filterable = data.filterable;
     }
     static fromJSON(data) {
         const constraints = [];
@@ -86,7 +90,9 @@ export class Field {
             description: data.description,
             parameters: data.parameters,
             constraints: constraints,
-            targets: data.targets
+            targets: data.targets,
+            sortable: data.sortable,
+            filterable: data.filterable
         });
     }
 }
@@ -95,11 +101,17 @@ export class Model {
     fields;
     constraints;
     indexes;
+    /** Named sort orders. */
+    sortings;
+    /** Named filters. */
+    filters;
     constructor(data) {
         this.metadata = data.metadata;
         this.fields = data.fields;
         this.constraints = data.constraints ?? [];
         this.indexes = data.indexes ?? [];
+        this.sortings = data.sortings;
+        this.filters = data.filters;
     }
     static fromJSON(data) {
         const metadata = new Metadata(data.metadata);
@@ -108,7 +120,9 @@ export class Model {
             metadata: metadata,
             fields: fields,
             constraints: data.constraints,
-            indexes: data.indexes
+            indexes: data.indexes,
+            sortings: data.sortings,
+            filters: data.filters
         });
     }
     static fromJsonString(jsonString) {

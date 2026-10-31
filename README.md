@@ -32,11 +32,29 @@ user.fields[0].constraints                  // Constraint objects: { name: 'prim
 | `Rule` | A comparison of a field with a value or another field, for checks and partial indexes |
 | `Index` | `name`, `fields`, `unique`, `where`, `targets` |
 | `Targets` | Options for one target only, e.g. `{ postgresql: { type: 'CITEXT' } }` |
+| `Sortable`, `SortDefinition` | `Field.sortable`: how records can be sorted by the field |
+| `Filterable`, `FilterDefinition`, `ArgumentType` | `Field.filterable`: how records can be filtered by the field |
+| `SortKey`, `ModelFilter` | `Model.sortings` and `Model.filters`: named sort orders and filters |
 
 `Model.fromJSON()` reads field constraints into `Constraint` objects. `new Model(json)` keeps the JSON as it is, with
 constraints as a map. The bridges accept both.
 
 The format itself is described in [model-schema](https://github.com/model-algebra/model-schema).
+
+### Sorting and filtering
+
+`sortable` and `filterable` take `true`, one definition, or named definitions (see
+[model-schema](https://github.com/model-algebra/model-schema#sorting-and-filtering)). These helpers give named
+definitions in every case; the one definition of `true` or of an unnamed definition is named `''`:
+
+```ts
+import { filterDefinitions, sortDefinitions } from 'model-algebra-common'
+
+sortDefinitions(true)                                 // { '': {} }
+sortDefinitions({ function: 'lower' })                // { '': { function: 'lower' } }
+filterDefinitions(true)                               // { '': { op: '=' } }
+filterDefinitions({ eq: { op: '=' }, prefix: { predicate: 'startsWith', argument: true } })   // as given
+```
 
 ### Sets of models
 
@@ -73,6 +91,7 @@ model to `CREATE TABLE` and back, and `DdlSetBridge` does the same for the DDL o
 
 ```sh
 pnpm install
+pnpm test
 pnpm type-check
 pnpm build
 ```
