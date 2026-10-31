@@ -3,7 +3,9 @@ export declare class Metadata {
     version: string;
     schema?: string;
     description?: string;
+    /** Keys the model format doesn't define, e.g. those of bridges, are kept as they are. */
     constructor(data: any);
+    toJSON(): Record<string, unknown>;
 }
 /** Target-specific options keyed by target name (e.g. "postgresql"); ignored by other targets. */
 export type Targets = Record<string, Record<string, any>>;
@@ -88,8 +90,11 @@ export declare class Field {
     targets?: Targets;
     sortable?: Sortable;
     filterable?: Filterable;
+    /** Keys the model format doesn't define, e.g. form options of a UI bridge, are kept as they are. */
     constructor(data: any);
     static fromJSON(data: any): Field;
+    /** The JSON form: constraints as a map, without empty values. */
+    toJSON(): Record<string, unknown>;
 }
 export declare class Model {
     metadata: Metadata;
@@ -100,8 +105,11 @@ export declare class Model {
     sortings?: Record<string, SortKey[]>;
     /** Named filters. */
     filters?: Record<string, ModelFilter>;
+    /** Keys the model format doesn't define, e.g. form options of a UI bridge, are kept as they are. */
     constructor(data: any);
     static fromJSON(data: any): Model;
+    /** The JSON form, which Model.fromJSON() reads back; JSON.stringify(model) gives it too. */
+    toJSON(): Record<string, unknown>;
     static fromJsonString(jsonString: string): Model;
 }
 //# sourceMappingURL=Model.d.ts.map

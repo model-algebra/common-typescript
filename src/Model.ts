@@ -39,17 +39,22 @@
 }
 */
 
+const withoutUndefined = (value: object): Record<string, unknown> =>
+    Object.fromEntries(Object.entries(value).filter(([, item]) => item !== undefined));
+
 export class Metadata {
-    name: string;
-    version: string;
+    name!: string;
+    version!: string;
     schema?: string;
     description?: string;
 
+    /** Keys the model format doesn't define, e.g. those of bridges, are kept as they are. */
     constructor(data: any) {
-        this.name = data.name;
-        this.version = data.version;
-        this.schema = data.schema;
-        this.description = data.description;
+        Object.assign(this, data);
+    }
+
+    toJSON(): Record<string, unknown> {
+        return withoutUndefined({ ...this });
     }
 }
 
@@ -135,24 +140,18 @@ export class Constraint {
 }
 
 export class Field {
-    name: string;
-    type: string;
+    name!: string;
+    type!: string;
     description?: string;
     parameters?: Record<string, any>;
-    constraints: Array<Constraint>;
+    constraints!: Array<Constraint>;
     targets?: Targets;
     sortable?: Sortable;
     filterable?: Filterable;
 
+    /** Keys the model format doesn't define, e.g. form options of a UI bridge, are kept as they are. */
     constructor(data: any) {
-        this.name = data.name;
-        this.type = data.type;
-        this.description = data.description;
-        this.parameters = data.parameters;
-        this.constraints = data.constraints;
-        this.targets = data.targets;
-        this.sortable = data.sortable;
-        this.filterable = data.filterable;
+        Object.assign(this, data);
     }
 
     public static fromJSON(data: any): Field {
@@ -162,22 +161,19 @@ export class Field {
                 constraints.push(new Constraint(key, value));
             }
         }
-        return new Field({
-            name: data.name,
-            type: data.type,
-            description: data.description,
-            parameters: data.parameters,
-            constraints: constraints,
-            targets: data.targets,
-            sortable: data.sortable,
-            filterable: data.filterable
-        });
+        return new Field({ ...data, constraints });
+    }
+
+    /** The JSON form: constraints as a map, without empty values. */
+    toJSON(): Record<string, unknown> {
+        const constraints = Object.fromEntries((this.constraints ?? []).map(constraint => [constraint.name, constraint.value]));
+        return withoutUndefined({ ...this, constraints: Object.keys(constraints).length > 0 ? constraints : undefined });
     }
 }
 
 export class Model {
-    metadata: Metadata;
-    fields: Array<Field>;
+    metadata!: Metadata;
+    fields!: Array<Field>;
     constraints: Array<TableConstraint>;
     indexes: Array<Index>;
     /** Named sort orders. */
@@ -185,25 +181,29 @@ export class Model {
     /** Named filters. */
     filters?: Record<string, ModelFilter>;
 
+    /** Keys the model format doesn't define, e.g. form options of a UI bridge, are kept as they are. */
     constructor(data: any) {
-        this.metadata = data.metadata;
-        this.fields = data.fields;
+        Object.assign(this, data);
         this.constraints = data.constraints ?? [];
         this.indexes = data.indexes ?? [];
-        this.sortings = data.sortings;
-        this.filters = data.filters;
     }
 
     public static fromJSON(data: any): Model {
-        const metadata = new Metadata(data.metadata);
-        const fields: Array<Field> = data.fields.map((fieldData: any) => Field.fromJSON(fieldData));
         return new Model({
-            metadata: metadata,
-            fields: fields,
-            constraints: data.constraints,
-            indexes: data.indexes,
-            sortings: data.sortings,
-            filters: data.filters
+            ...data,
+            metadata: new Metadata(data.metadata),
+            fields: data.fields.map((fieldData: any) => Field.fromJSON(fieldData)),
+        });
+    }
+
+    /** The JSON form, which Model.fromJSON() reads back; JSON.stringify(model) gives it too. */
+    toJSON(): Record<string, unknown> {
+        return withoutUndefined({
+            ...this,
+            metadata: this.metadata instanceof Metadata ? this.metadata.toJSON() : this.metadata,
+            fields: this.fields.map(field => field instanceof Field ? field.toJSON() : field),
+            constraints: this.constraints.length > 0 ? this.constraints : undefined,
+            indexes: this.indexes.length > 0 ? this.indexes : undefined,
         });
     }
 

@@ -39,6 +39,11 @@ user.fields[0].constraints                  // Constraint objects: { name: 'prim
 `Model.fromJSON()` reads field constraints into `Constraint` objects. `new Model(json)` keeps the JSON as it is, with
 constraints as a map. The bridges accept both.
 
+Keys the format doesn't define are kept, on the model, its metadata and its fields, so models can carry what a bridge
+needs (the form options of vuetify-bridge, for example). `model.toJSON()` gives the JSON form back, with constraints
+as a map and without empty values; `JSON.stringify(model)` uses it, and `Model.fromJSON(model.toJSON())` is the same
+model.
+
 The format itself is described in [model-schema](https://github.com/model-algebra/model-schema).
 
 ### Sorting and filtering
